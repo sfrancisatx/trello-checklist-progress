@@ -83,8 +83,9 @@
         var completedItems = 0;
 
         card.checklists.forEach(function(checklist) {
-          totalItems += checklist.checkItems.length;
-          completedItems += checklist.checkItems.filter(function(item) {
+          var items = checklist.checkItems || [];
+          totalItems += items.length;
+          completedItems += items.filter(function(item) {
             return item.state === 'complete';
           }).length;
         });
@@ -103,8 +104,9 @@
         if (card.checklists.length > 1) {
           html += '<div class="checklist-breakdown">';
           card.checklists.forEach(function(checklist) {
-            var checklistTotal = checklist.checkItems.length;
-            var checklistComplete = checklist.checkItems.filter(function(item) {
+            var items = checklist.checkItems || [];
+            var checklistTotal = items.length;
+            var checklistComplete = items.filter(function(item) {
               return item.state === 'complete';
             }).length;
             html += '<div class="checklist-breakdown-item">';
