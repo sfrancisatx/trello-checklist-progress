@@ -125,9 +125,11 @@ TrelloPowerUp.initialize({
       var showBadge = results[1];
       var displayMode = results[2];
 
+      console.log('Checklist Progress - card data:', card);
       if (!showBadge) return [];
 
       var stats = getChecklistStats(card);
+      console.log('Checklist Progress - stats:', stats);
       
       if (stats.total === 0) return [];
 
