@@ -75,18 +75,26 @@ function getProgressColor(percentage) {
   return 'light-gray';
 }
 
+// Build a unicode progress bar string e.g. "███░░"
+function progressBar(percentage, segments) {
+  segments = segments || 5;
+  var filled = Math.round((percentage / 100) * segments);
+  return '█'.repeat(filled) + '░'.repeat(segments - filled);
+}
+
 // Format badge text based on display mode
 function formatBadgeText(stats, displayMode) {
   if (stats.total === 0) return null;
 
+  var bar = progressBar(stats.percentage);
   switch (displayMode) {
     case 'percentage':
-      return stats.percentage + '%';
+      return bar + ' ' + stats.percentage + '%';
     case 'both':
-      return stats.completed + '/' + stats.total + ' (' + stats.percentage + '%)';
+      return bar + ' ' + stats.completed + '/' + stats.total + ' (' + stats.percentage + '%)';
     case 'fraction':
     default:
-      return stats.completed + '/' + stats.total;
+      return bar + ' ' + stats.completed + '/' + stats.total;
   }
 }
 
@@ -128,7 +136,7 @@ TrelloPowerUp.initialize({
 
       return [{
         text: badgeText,
-        icon: progressBarIcon(stats.percentage, color),
+        icon: CHECKLIST_ICON,
         color: color,
         callback: function(t) {
           return t.popup({
