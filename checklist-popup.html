@@ -81,7 +81,8 @@
   </div>
 
   <script>
-    var t = TrelloPowerUp.iframe();
+    var APP_KEY = 'd700a75532f7a75fa31df0f8b9433749';
+    var t = TrelloPowerUp.iframe({ appKey: APP_KEY, appName: 'Checklist Progress' });
 
     function getProgressClass(percentage) {
       if (percentage === 100) return 'complete';
@@ -91,7 +92,29 @@
       return 'minimal';
     }
 
-    t.card('checklists')
+    function fetchChecklistsREST(cardId, token) {
+      return fetch('https://api.trello.com/1/cards/' + cardId +
+        '/checklists?checkItems=all&fields=name&key=' + APP_KEY + '&token=' + token)
+        .then(function(res) { return res.json(); });
+    }
+
+    function resolveChecklists() {
+      return Promise.all([
+        t.card('id', 'checklists'),
+        t.getRestApi().isAuthorized().catch(function() { return false; })
+      ]).then(function(results) {
+        var card = results[0];
+        var isAuthorized = results[1];
+        if (!isAuthorized) return { checklists: card.checklists || [] };
+        return t.getRestApi().getToken().then(function(token) {
+          return fetchChecklistsREST(card.id, token)
+            .then(function(checklists) { return { checklists: checklists }; })
+            .catch(function() { return { checklists: card.checklists || [] }; });
+        });
+      });
+    }
+
+    resolveChecklists()
       .then(function(card) {
         var content = document.getElementById('content');
         

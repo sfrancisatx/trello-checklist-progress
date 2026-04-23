@@ -9,7 +9,9 @@
     "card-badges",
     "card-buttons",
     "card-back-section",
-    "show-settings"
+    "show-settings",
+    "authorization-status",
+    "show-authorization"
   ],
   "connectors": {
     "iframe": {

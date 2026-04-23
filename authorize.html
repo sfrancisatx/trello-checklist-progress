@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      padding: 15px;
+      margin: 0;
+    }
+    p { color: #5e6c84; font-size: 13px; line-height: 1.5; }
+    button {
+      background: #0079bf;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #026aa7; }
+  </style>
+</head>
+<body>
+  <p>To display accurate checklist progress on your cards, authorize this Power-Up with read access to your Trello account.</p>
+  <button id="authorize">Authorize</button>
+
+  <script>
+    var t = TrelloPowerUp.iframe({
+      appKey: 'd700a75532f7a75fa31df0f8b9433749',
+      appName: 'Checklist Progress'
+    });
+
+    document.getElementById('authorize').addEventListener('click', function() {
+      t.getRestApi().authorize({
+        scope: 'read',
+        expiration: 'never'
+      }).then(function() {
+        t.closePopup();
+      }).catch(function(err) {
+        console.error('Authorization failed:', err);
+        alert('Authorization failed: ' + err.message);
+      });
+    });
+
+    t.render(function() { t.sizeTo('body'); });
+  </script>
+</body>
+</html>
