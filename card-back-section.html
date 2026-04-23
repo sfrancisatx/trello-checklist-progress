@@ -81,15 +81,23 @@
     function resolveChecklists() {
       return Promise.all([
         t.card('id', 'checklists'),
-        t.getRestApi().isAuthorized().catch(function() { return false; })
+        t.getRestApi().isAuthorized().catch(function(e) { console.warn('isAuthorized threw:', e); return false; })
       ]).then(function(results) {
         var card = results[0];
         var isAuthorized = results[1];
+        console.log('[card-back-section] isAuthorized:', isAuthorized, 'cardId:', card.id);
         if (!isAuthorized) return { checklists: card.checklists || [] };
         return t.getRestApi().getToken().then(function(token) {
+          console.log('[card-back-section] token present:', !!token);
           return fetchChecklistsREST(card.id, token)
-            .then(function(checklists) { return { checklists: checklists }; })
-            .catch(function() { return { checklists: card.checklists || [] }; });
+            .then(function(checklists) {
+              console.log('[card-back-section] REST checklists:', checklists);
+              return { checklists: checklists };
+            })
+            .catch(function(err) {
+              console.error('[card-back-section] REST failed:', err);
+              return { checklists: card.checklists || [] };
+            });
         });
       });
     }
