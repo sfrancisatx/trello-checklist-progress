@@ -38,8 +38,9 @@ function getChecklistStats(card) {
 
   if (card.checklists && card.checklists.length > 0) {
     card.checklists.forEach(function(checklist) {
-      var checklistTotal = checklist.checkItems.length;
-      var checklistComplete = checklist.checkItems.filter(function(item) {
+      var items = checklist.checkItems || [];
+      var checklistTotal = items.length;
+      var checklistComplete = items.filter(function(item) {
         return item.state === 'complete';
       }).length;
 
