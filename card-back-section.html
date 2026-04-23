@@ -72,6 +72,7 @@
 
     t.card('checklists')
       .then(function(card) {
+        console.log('card-back-section card:', card);
         var content = document.getElementById('content');
         
         if (!card.checklists || card.checklists.length === 0) {
