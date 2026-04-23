@@ -102,7 +102,8 @@
       });
     }
 
-    resolveChecklists()
+    function doRender() {
+      return resolveChecklists()
       .then(function(card) {
         var content = document.getElementById('content');
         
@@ -153,6 +154,11 @@
       .catch(function(error) {
         console.error('Error loading checklists:', error);
       });
+    }
+
+    t.render(function() {
+      doRender();
+    });
   </script>
 </body>
 </html>
