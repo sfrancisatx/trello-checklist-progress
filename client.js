@@ -37,6 +37,10 @@ function getChecklistStats(card) {
   var checklistDetails = [];
 
   if (card.checklists && card.checklists.length > 0) {
+    console.log('First checklist:', card.checklists[0]);
+    if (card.checklists[0] && card.checklists[0].checkItems && card.checklists[0].checkItems[0]) {
+      console.log('First item:', card.checklists[0].checkItems[0]);
+    }
     card.checklists.forEach(function(checklist) {
       var items = checklist.checkItems || [];
       var checklistTotal = items.length;
