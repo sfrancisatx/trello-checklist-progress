@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+      padding: 15px;
+      margin: 0;
+    }
+    .overall-progress {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f4f5f7;
+      border-radius: 3px;
+    }
+    .overall-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172b4d;
+      margin-bottom: 10px;
+    }
+    .overall-stats {
+      font-size: 24px;
+      font-weight: 700;
+      color: #172b4d;
+    }
+    .overall-percentage {
+      font-size: 18px;
+      color: #5e6c84;
+      margin-left: 10px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: #dfe1e6;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .progress-fill.complete { background: #61bd4f; }
+    .progress-fill.high { background: #c9df56; }
+    .progress-fill.medium { background: #f2d600; }
+    .progress-fill.low { background: #ff9f1a; }
+    .progress-fill.minimal { background: #eb5a46; }
+    
+    .checklist-item {
+      margin-bottom: 15px;
+      padding: 12px;
+      border: 1px solid #dfe1e6;
+      border-radius: 3px;
+      background: white;
+    }
+    .checklist-name {
+      font-weight: 600;
+      color: #172b4d;
+      margin-bottom: 8px;
+    }
+    .checklist-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #5e6c84;
+    }
+    .no-checklists {
+      text-align: center;
+      color: #5e6c84;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <div class="no-checklists">Loading...</div>
+  </div>
+
+  <script>
+    var t = TrelloPowerUp.iframe();
+
+    function getProgressClass(percentage) {
+      if (percentage === 100) return 'complete';
+      if (percentage >= 75) return 'high';
+      if (percentage >= 50) return 'medium';
+      if (percentage >= 25) return 'low';
+      return 'minimal';
+    }
+
+    t.card('checklists')
+      .then(function(card) {
+        var content = document.getElementById('content');
+        
+        if (!card.checklists || card.checklists.length === 0) {
+          content.innerHTML = '<div class="no-checklists">No checklists on this card</div>';
+          t.sizeTo('#content');
+          return;
+        }
+
+        var totalItems = 0;
+        var completedItems = 0;
+
+        card.checklists.forEach(function(checklist) {
+          totalItems += checklist.checkItems.length;
+          completedItems += checklist.checkItems.filter(function(item) {
+            return item.state === 'complete';
+          }).length;
+        });
+
+        var overallPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+        var progressClass = getProgressClass(overallPercentage);
+
+        var html = '<div class="overall-progress">';
+        html += '<div class="overall-title">Overall Progress</div>';
+        html += '<div class="overall-stats">';
+        html += completedItems + '/' + totalItems;
+        html += '<span class="overall-percentage">' + overallPercentage + '%</span>';
+        html += '</div>';
+        html += '<div class="progress-bar">';
+        html += '<div class="progress-fill ' + progressClass + '" style="width: ' + overallPercentage + '%"></div>';
+        html += '</div>';
+        html += '</div>';
+
+        card.checklists.forEach(function(checklist) {
+          var checklistTotal = checklist.checkItems.length;
+          var checklistComplete = checklist.checkItems.filter(function(item) {
+            return item.state === 'complete';
+          }).length;
+          var checklistPercentage = checklistTotal > 0 ? Math.round((checklistComplete / checklistTotal) * 100) : 0;
+          var checklistProgressClass = getProgressClass(checklistPercentage);
+
+          html += '<div class="checklist-item">';
+          html += '<div class="checklist-name">' + checklist.name + '</div>';
+          html += '<div class="checklist-stats">';
+          html += '<span>' + checklistComplete + '/' + checklistTotal + ' complete</span>';
+          html += '<span>' + checklistPercentage + '%</span>';
+          html += '</div>';
+          html += '<div class="progress-bar">';
+          html += '<div class="progress-fill ' + checklistProgressClass + '" style="width: ' + checklistPercentage + '%"></div>';
+          html += '</div>';
+          html += '</div>';
+        });
+
+        content.innerHTML = html;
+        t.sizeTo('#content');
+      })
+      .catch(function(error) {
+        console.error('Error loading checklists:', error);
+        document.getElementById('content').innerHTML = 
+          '<div class="no-checklists">Error loading checklists</div>';
+      });
+  </script>
+</body>
+</html>

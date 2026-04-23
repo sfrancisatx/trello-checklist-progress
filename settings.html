@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+      padding: 15px;
+      margin: 0;
+    }
+    h3 {
+      margin-top: 0;
+      color: #172b4d;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #5e6c84;
+      font-size: 13px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #dfe1e6;
+      border-radius: 3px;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+    .info {
+      background: #f4f5f7;
+      padding: 10px;
+      border-radius: 3px;
+      margin-top: 15px;
+      font-size: 12px;
+      color: #5e6c84;
+    }
+  </style>
+</head>
+<body>
+  <h3>Display Settings</h3>
+  
+  <label>
+    Badge Display Format:
+    <select id="displayMode">
+      <option value="fraction">Fraction (3/5)</option>
+      <option value="percentage">Percentage (60%)</option>
+      <option value="both">Both (3/5 - 60%)</option>
+    </select>
+  </label>
+
+  <div class="info">
+    <strong>Note:</strong> This setting applies to all cards on this board. Individual cards can toggle badge visibility using the card button.
+  </div>
+
+  <script>
+    var t = TrelloPowerUp.iframe();
+    var DISPLAY_MODE_KEY = 'displayMode';
+
+    // Load current setting
+    t.get('board', 'shared', DISPLAY_MODE_KEY, 'fraction')
+      .then(function(displayMode) {
+        document.getElementById('displayMode').value = displayMode;
+      });
+
+    // Save on change
+    document.getElementById('displayMode').addEventListener('change', function(e) {
+      var newMode = e.target.value;
+      t.set('board', 'shared', DISPLAY_MODE_KEY, newMode)
+        .then(function() {
+          console.log('Display mode updated to:', newMode);
+        });
+    });
+
+    t.render(function() {
+      t.sizeTo('body');
+    });
+  </script>
+</body>
+</html>

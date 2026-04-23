@@ -1,0 +1,19 @@
+{
+  "name": "Checklist Progress",
+  "details": "Show checklist completion progress on card fronts with badges, tooltips, and detailed popups",
+  "icon": {
+    "url": "./icon.png"
+  },
+  "author": "Strong Events",
+  "capabilities": [
+    "card-badges",
+    "card-buttons",
+    "card-back-section",
+    "show-settings"
+  ],
+  "connectors": {
+    "iframe": {
+      "url": "./index.html"
+    }
+  }
+}
