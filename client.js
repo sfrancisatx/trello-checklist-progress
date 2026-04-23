@@ -27,7 +27,7 @@ function progressBarIcon(percentage, colorName) {
       '<rect x="0" y="4" width="48" height="8" rx="2" fill="' + bgColor + '"/>' +
       '<rect x="0" y="4" width="' + (48 * pct / 100) + '" height="8" rx="2" fill="' + fillColor + '"/>' +
     '</svg>';
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  return 'data:image/svg+xml;base64,' + btoa(svg);
 }
 
 // Calculate checklist statistics
