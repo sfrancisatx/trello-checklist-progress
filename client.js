@@ -3,32 +3,8 @@
 var SHOW_BADGE_KEY = 'showChecklistBadge';
 var DISPLAY_MODE_KEY = 'displayMode'; // 'fraction', 'percentage', 'both'
 
-// Static fallback checklist icon (used in toggle button)
+// Checklist icon as data URL
 var CHECKLIST_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNDI1MjZFIiBkPSJNMTAgMThoLTRhMSAxIDAgMCAxLTEtMVY3YTEgMSAwIDAgMSAxLTFoNGExIDEgMCAwIDEgMSAxdjEwYTEgMSAwIDAgMS0xIDF6bTYgMGgtNGExIDEgMCAwIDEtMS0xVjdhMSAxIDAgMCAxIDEtMWg0YTEgMSAwIDAgMSAxIDF2MTBhMSAxIDAgMCAxLTEgMXoiLz48L3N2Zz4=';
-
-// Map Trello color names to hex values for progress bar fill
-var COLOR_HEX = {
-  'green':      '#61bd4f',
-  'lime':       '#b3d445',
-  'yellow':     '#f2d600',
-  'orange':     '#ff9f1a',
-  'red':        '#eb5a46',
-  'light-gray': '#c4c9cc'
-};
-
-// Generate an SVG progress bar data URL for the given percentage + color
-function progressBarIcon(percentage, colorName) {
-  var fillColor = COLOR_HEX[colorName] || '#61bd4f';
-  var bgColor = '#e0e0e0';
-  var pct = Math.max(0, Math.min(100, percentage));
-  // 48x16 viewBox - horizontal progress bar
-  var svg =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16">' +
-      '<rect x="0" y="4" width="48" height="8" rx="2" fill="' + bgColor + '"/>' +
-      '<rect x="0" y="4" width="' + (48 * pct / 100) + '" height="8" rx="2" fill="' + fillColor + '"/>' +
-    '</svg>';
-  return 'data:image/svg+xml;base64,' + btoa(svg);
-}
 
 // Calculate checklist statistics
 function getChecklistStats(card) {
@@ -37,14 +13,9 @@ function getChecklistStats(card) {
   var checklistDetails = [];
 
   if (card.checklists && card.checklists.length > 0) {
-    console.log('First checklist:', card.checklists[0]);
-    if (card.checklists[0] && card.checklists[0].checkItems && card.checklists[0].checkItems[0]) {
-      console.log('First item:', card.checklists[0].checkItems[0]);
-    }
     card.checklists.forEach(function(checklist) {
-      var items = checklist.checkItems || [];
-      var checklistTotal = items.length;
-      var checklistComplete = items.filter(function(item) {
+      var checklistTotal = checklist.checkItems.length;
+      var checklistComplete = checklist.checkItems.filter(function(item) {
         return item.state === 'complete';
       }).length;
 
@@ -80,26 +51,18 @@ function getProgressColor(percentage) {
   return 'light-gray';
 }
 
-// Build a unicode progress bar string e.g. "███░░"
-function progressBar(percentage, segments) {
-  segments = segments || 5;
-  var filled = Math.round((percentage / 100) * segments);
-  return '█'.repeat(filled) + '░'.repeat(segments - filled);
-}
-
 // Format badge text based on display mode
 function formatBadgeText(stats, displayMode) {
   if (stats.total === 0) return null;
 
-  var bar = progressBar(stats.percentage);
   switch (displayMode) {
     case 'percentage':
-      return bar + ' ' + stats.percentage + '%';
+      return stats.percentage + '%';
     case 'both':
-      return bar + ' ' + stats.completed + '/' + stats.total + ' (' + stats.percentage + '%)';
+      return stats.completed + '/' + stats.total + ' (' + stats.percentage + '%)';
     case 'fraction':
     default:
-      return bar + ' ' + stats.completed + '/' + stats.total;
+      return stats.completed + '/' + stats.total;
   }
 }
 
@@ -129,11 +92,9 @@ TrelloPowerUp.initialize({
       var showBadge = results[1];
       var displayMode = results[2];
 
-      console.log('Checklist Progress - card data:', card);
       if (!showBadge) return [];
 
       var stats = getChecklistStats(card);
-      console.log('Checklist Progress - stats:', stats);
       
       if (stats.total === 0) return [];
 

@@ -72,7 +72,6 @@
 
     t.card('checklists')
       .then(function(card) {
-        console.log('card-back-section card:', card);
         var content = document.getElementById('content');
         
         if (!card.checklists || card.checklists.length === 0) {
@@ -84,9 +83,8 @@
         var completedItems = 0;
 
         card.checklists.forEach(function(checklist) {
-          var items = checklist.checkItems || [];
-          totalItems += items.length;
-          completedItems += items.filter(function(item) {
+          totalItems += checklist.checkItems.length;
+          completedItems += checklist.checkItems.filter(function(item) {
             return item.state === 'complete';
           }).length;
         });
@@ -105,9 +103,8 @@
         if (card.checklists.length > 1) {
           html += '<div class="checklist-breakdown">';
           card.checklists.forEach(function(checklist) {
-            var items = checklist.checkItems || [];
-            var checklistTotal = items.length;
-            var checklistComplete = items.filter(function(item) {
+            var checklistTotal = checklist.checkItems.length;
+            var checklistComplete = checklist.checkItems.filter(function(item) {
               return item.state === 'complete';
             }).length;
             html += '<div class="checklist-breakdown-item">';
